@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    Project: Energy Consumption Dataset
+    Author: RSK World
+    Website: https://rskworld.in
+    Email: help@rskworld.in
+    Phone: +91 93305 39277
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Consumption Dataset - RSK World</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #3498db;
+            --dark-color: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+        .card-body {
+            padding: 30px;
+            background: white;
+        }
+        .icon-large {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-list li i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 40px;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="card-header text-center">
+                <i class="fas fa-clock icon-large"></i>
+                <h1 class="mb-0">Energy Consumption Dataset</h1>
+                <p class="mb-0 mt-2">Smart meter energy consumption dataset with hourly electricity usage patterns</p>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-info-circle text-success"></i> About This Dataset</h3>
+                <p class="lead">
+                    This dataset contains hourly energy consumption data from smart meters with seasonal patterns, 
+                    peak hours, and consumption trends. Perfect for energy demand forecasting, load prediction, 
+                    and smart grid applications.
+                </p>
+                
+                <h4 class="mt-4"><i class="fas fa-star text-warning"></i> Key Features</h4>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i> Hourly consumption data</li>
+                    <li><i class="fas fa-check-circle"></i> Seasonal patterns</li>
+                    <li><i class="fas fa-check-circle"></i> Peak hour identification</li>
+                    <li><i class="fas fa-check-circle"></i> Multiple households</li>
+                    <li><i class="fas fa-check-circle"></i> Time series ready format</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalRecords">-</div>
+                    <div class="stats-label">Total Records</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="households">-</div>
+                    <div class="stats-label">Households</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="avgConsumption">-</div>
+                    <div class="stats-label">Avg Consumption (kWh)</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="dateRange">-</div>
+                    <div class="stats-label">Days of Data</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizations -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-chart-line text-primary"></i> Data Visualizations</h3>
+                <div class="chart-container">
+                    <canvas id="consumptionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-chart-bar text-info"></i> Hourly Patterns</h3>
+                <div class="chart-container">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seasonal Patterns -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-calendar-alt text-warning"></i> Seasonal Patterns</h3>
+                <div class="chart-container">
+                    <canvas id="seasonalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Household Comparison -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-home text-danger"></i> Household Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="householdChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Features Section -->
+        <div class="card">
+            <div class="card-header text-center">
+                <h3><i class="fas fa-rocket"></i> Advanced Features</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                                <h5>Machine Learning</h5>
+                                <p class="small">Forecasting models including Linear Regression and Random Forest</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <h5>Anomaly Detection</h5>
+                                <p class="small">Multiple detection methods: IQR, Z-score, Isolation Forest, Time Series</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 border-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                                <h5>Time Series Analysis</h5>
+                                <p class="small">Decomposition, autocorrelation, trend detection, and stationarity tests</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technologies -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-tools text-secondary"></i> Technologies</h3>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary p-2">CSV</span>
+                    <span class="badge bg-primary p-2">JSON</span>
+                    <span class="badge bg-primary p-2">Pandas</span>
+                    <span class="badge bg-primary p-2">Time Series</span>
+                    <span class="badge bg-primary p-2">Python</span>
+                    <span class="badge bg-primary p-2">Data Analysis</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="card">
+            <div class="card-body text-center">
+                <h3><i class="fas fa-download text-success"></i> Download Dataset</h3>
+                <p>Get the complete dataset in CSV or JSON format</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="energy_consumption.csv" class="btn btn-primary" download>
+                        <i class="fas fa-file-csv"></i> Download CSV
+                    </a>
+                    <a href="energy_consumption.json" class="btn btn-primary" download>
+                        <i class="fas fa-file-code"></i> Download JSON
+                    </a>
+                </div>
+                <hr class="my-4">
+                <h5 class="mb-3">Advanced Scripts</h5>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="badge bg-info p-2">forecasting.py - ML Models</span>
+                    <span class="badge bg-warning p-2">anomaly_detection.py</span>
+                    <span class="badge bg-success p-2">advanced_analysis.py</span>
+                    <span class="badge bg-secondary p-2">preprocessing.py</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Example -->
+        <div class="card">
+            <div class="card-body">
+                <h3><i class="fas fa-code text-dark"></i> Usage Example</h3>
+                <pre class="bg-dark text-light p-3 rounded"><code>import pandas as pd
+
+# Load the dataset
+df = pd.read_csv('energy_consumption.csv')
+
+# Basic statistics
+print(df.describe())
+
+# Peak hour analysis
+hourly_avg = df.groupby('hour')['consumption_kwh'].mean()
+print(hourly_avg.sort_values(ascending=False).head())</code></pre>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Energy Consumption Dataset</strong></p>
+            <p>Project by <a href="https://rskworld.in" target="_blank">RSK World</a></p>
+            <p>
+                <a href="mailto:help@rskworld.in">help@rskworld.in</a> | 
+                <a href="tel:+919330539277">+91 93305 39277</a>
+            </p>
+            <p><small>&copy; 2026 RSK World. Free to use for educational and research purposes.</small></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load and display data
+        async function loadData() {
+            try {
+                const response = await fetch('energy_consumption.json');
+                const data = await response.json();
+                
+                // Calculate statistics
+                const totalRecords = data.length;
+                const households = new Set(data.map(d => d.household_id)).size;
+                const avgConsumption = (data.reduce((sum, d) => sum + d.consumption_kwh, 0) / totalRecords).toFixed(2);
+                const dates = data.map(d => new Date(d.timestamp));
+                const dateRange = Math.ceil((Math.max(...dates) - Math.min(...dates)) / (1000 * 60 * 60 * 24));
+                
+                // Update stats
+                document.getElementById('totalRecords').textContent = totalRecords.toLocaleString();
+                document.getElementById('households').textContent = households;
+                document.getElementById('avgConsumption').textContent = avgConsumption;
+                document.getElementById('dateRange').textContent = dateRange;
+                
+                // Sample data for charts (first 1000 records for performance)
+                const sampleData = data.slice(0, 1000);
+                
+                // Time series chart
+                const ctx1 = document.getElementById('consumptionChart').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: sampleData.map(d => new Date(d.timestamp).toLocaleDateString()),
+                        datasets: [{
+                            label: 'Consumption (kWh)',
+                            data: sampleData.map(d => d.consumption_kwh),
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Energy Consumption Over Time'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                // Hourly patterns chart
+                const hourlyData = {};
+                data.forEach(d => {
+                    const hour = d.hour;
+                    if (!hourlyData[hour]) {
+                        hourlyData[hour] = [];
+                    }
+                    hourlyData[hour].push(d.consumption_kwh);
+                });
+                
+                const hourlyAvg = Object.keys(hourlyData).sort((a, b) => a - b).map(hour => {
+                    const values = hourlyData[hour];
+                    return values.reduce((sum, v) => sum + v, 0) / values.length;
+                });
+                
+                const ctx2 = document.getElementById('hourlyChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => i + ':00'),
+                        datasets: [{
+                            label: 'Average Consumption (kWh)',
+                            data: hourlyAvg,
+                            backgroundColor: '#3498db',
+                            borderColor: '#2980b9',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Average Consumption by Hour of Day'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                // Seasonal patterns chart
+                const monthlyData = {};
+                data.forEach(d => {
+                    const date = new Date(d.timestamp);
+                    const month = date.getMonth();
+                    if (!monthlyData[month]) {
+                        monthlyData[month] = [];
+                    }
+                    monthlyData[month].push(d.consumption_kwh);
+                });
+                
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const monthlyAvg = months.map((_, month) => {
+                    const values = monthlyData[month] || [];
+                    return values.length > 0 ? values.reduce((sum, v) => sum + v, 0) / values.length : 0;
+                });
+                
+                const ctx3 = document.getElementById('seasonalChart').getContext('2d');
+                new Chart(ctx3, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Average Consumption (kWh)',
+                            data: monthlyAvg,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Average Consumption by Month'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                // Household comparison chart
+                const householdData = {};
+                data.forEach(d => {
+                    const household = d.household_id;
+                    if (!householdData[household]) {
+                        householdData[household] = [];
+                    }
+                    householdData[household].push(d.consumption_kwh);
+                });
+                
+                const householdAvg = Object.keys(householdData).sort().map(household => {
+                    const values = householdData[household];
+                    return values.reduce((sum, v) => sum + v, 0) / values.length;
+                });
+                
+                const ctx4 = document.getElementById('householdChart').getContext('2d');
+                new Chart(ctx4, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(householdData).sort(),
+                        datasets: [{
+                            label: 'Average Consumption (kWh)',
+                            data: householdAvg,
+                            backgroundColor: [
+                                '#3498db',
+                                '#2ecc71',
+                                '#e74c3c',
+                                '#f39c12',
+                                '#9b59b6'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Average Consumption by Household'
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('totalRecords').textContent = 'Error';
+            }
+        }
+        
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>
+

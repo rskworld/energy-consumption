@@ -1,0 +1,14 @@
+# Energy Consumption Dataset - Python Dependencies
+# Project: Energy Consumption Dataset
+# Author: RSK World
+# Website: https://rskworld.in
+# Email: help@rskworld.in
+# Phone: +91 93305 39277
+
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
